@@ -18,7 +18,6 @@ SCHEMA = [ ("name", "name"), ("company", "company"), ("phone", "phone_number") ]
 TOTAL_RECORDS = 5
 OUTFILE_HOME = None
 OUTFILE_NAME = None
-TMP_FILE = tempfile.TemporaryFile()
 
 def generate(schema=SCHEMA, total_rcords=TOTAL_RECORDS, output_file_name=OUTFILE_NAME, output_home=OUTFILE_HOME):
     """
