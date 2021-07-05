@@ -24,6 +24,11 @@ SELECT * FROM TEST
 """
 
 def create_db(db_file=DB_FILE):
+    """
+    Define a DB to SQLAlchemy
+    :param db_file:
+    :return:
+    """
 
     if not db_file:
         db_file = tempfile.NamedTemporaryFile().name + ".db"
@@ -43,9 +48,14 @@ def create_table(engine=None, sql=CREATE_TABLE):
         log.error("No valid SQLAlchemy engine passed.")
         raise Exception("No valid SQLAlchemy engine passed.")
 
-    log.info(f"Executing query - {sql}")
-    r = engine.execute(text(sql))
-    log.info(r)
+    log.info("Creating table.")
+    try:
+        log.debug(f"Executing query - {sql}")
+        r = engine.execute(text(sql))
+    except Exception as e:
+        log.error(e)
+        raise Exception("Failed to create table.")
+
 
 def insert_data(engine=None):
 
@@ -53,13 +63,19 @@ def insert_data(engine=None):
         log.error("No valid SQLAlchemy engine passed.")
         raise Exception("No valid SQLAlchemy engine passed.")
 
-    f = Faker()
-    for i in range(TOTAL_RECORD):
-        engine.execute(
-            text(
-                INSERT_QUERY.format(i, f.name(), f.random_int())
+    log.info(f"Inserting {TOTAL_RECORD} row(s) into table.")
+    try:
+        f = Faker()
+        for i in range(TOTAL_RECORD):
+            engine.execute(
+                text(
+                    INSERT_QUERY.format(i, f.name(), f.random_int())
+                )
             )
-        )
+    except Exception as e:
+        log.error(e)
+        raise Exception("Failed to insert data.")
+
 
 def show_data(engine=None):
 
@@ -67,11 +83,16 @@ def show_data(engine=None):
         log.error("No valid SQLAlchemy engine passed.")
         raise Exception("No valid SQLAlchemy engine passed.")
 
-    r = engine.execute(
+    try:
+        r = engine.execute(
             text(
                 SELECT_QUERY
             )
         )
+    except Exception as e:
+        log.error(e)
+        raise Exception("Failed to query table.")
+
 
     result_set = r.fetchall()
     log.info(f"Total row fetched is {len(result_set)}.")
